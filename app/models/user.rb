@@ -13,4 +13,15 @@ class User < ActiveRecord::Base
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
+
+  scope :premium, -> { where(premium: true) }
+  scope :not, ->(id) { where('id != ?', id) }
+
+  def collaborations
+    wikis = []
+    Collaborator.where(user: self).each do |collaboration|
+      wikis << Wiki.find(collaboration.wiki_id)
+    end
+    wikis
+  end
 end
